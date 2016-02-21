@@ -8,13 +8,14 @@
 
 class SugarNotifyUser {
 	function notify_user_on_post_comment($bean, $event, $arguments) {
-		//if activity type is a post or a comment
-		if($bean->activity_type=="post" || $bean->activity_type=="comment") {
+		//if activity type is a post
+		if($bean->activity_type=="post") {
 			//get the parent bean
 			$parent_bean = BeanFactory::getBean($bean->parent_type, $bean->parent_id);
 			//initialize notification bean
 			$notification_bean = BeanFactory::getBean("Notifications");
-			$notification_bean->name = ($bean->activity_type=="post") ? "New post on {$bean->parent_type}" : "New comment on {$bean->parent_type}";
+			//check if comment or a post
+			$notification_bean->name = ($bean->activity_type=="post" && $bean->comment_count==0) ? "New post on {$bean->parent_type}" : "New comment on {$bean->parent_type}";
 			$notification_bean->description = "New update has been posted on <a href='#{$bean->parent_type}/{$parent_bean->id}'>{$parent_bean->name}</a>";
 			//assigned user should be record assigned user
 			$notification_bean->assigned_user_id = $parent_bean->assigned_user_id;
